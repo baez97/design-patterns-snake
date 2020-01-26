@@ -64,3 +64,33 @@ Inside the `src` folder of my new `create-react-app` project, I am setting two f
 
 > In order to focus on Design Patterns, this article will not explain the View Coding or the framework details, but just the Model.
 
+## Chapter 1: I want to talk to my lawyer
+The first step would be defining classes for the Snake and the Cells, but how do we connect both? Well, the Cells may have a Snake property and viceversa, so that they can communicate commands with each other like "Hey Cell, I am here now" or "Hey snake, there's an obstacle here, decrease your length". That would be correct, good, and solves the problem.
+
+But what would happen...
+* If we decided to create another type of cell, like an obstacle, would we had to reimplement the Snake class?
+* If there are more actors in the game like Enemies, another Snake, moving food... would we had to reimplement the Cells class and their relationships?
+
+By connecting both classes directly, we are losing flexibility and reusability.
+
+### The Mediator Pattern
+Mediator is an structural pattern that encapsulates the way two classes interact within a class. That is, instead of connecting two classes directly, we connect both to a higher class that will be in charge of their interaction. 
+
+In the book, this problem is described using a form example where different widgets of the form (text inputs, checkboxes, radio buttons...) depends on each other behaviour. That is, a particular textfield should be disabled unless a particular radio button is selected. If we connect both classes, the text input and the radio button directly, and then we need to add a third widget or reuse this connection in another form, it is much more complicated to do so than if we wrap all the widget in a Form class that has connected all the elements and controls the relations between them.
+
+In this game, how could be call the mediator class? Well, it seems like its main purpose will be contain the snake and a collection of cells. What about `Board`? 
+<p align="center">
+  <img src="https://github.com/baez97/design-patterns-snake/blob/master/images/2-Mediator.png"/>
+</p>
+
+### Implementation
+The board class will create a Snake and a collection of Cells in its constructor, and it will contain the logic of the interaction between both. 
+In order to see if everything went well, I developed a simple GUI that displays the counter of every cell of the board.
+<p align="center">
+  <img src="https://github.com/baez97/design-patterns-snake/blob/master/images/3-CounterView.png"/>
+</p>
+
+But the purpose of the `Board` class was not only to contain the cells collection and the Snake, but also to communicate them. Let's add a `tick` method to it that calls the `tick` method of each cell, and executes the `move` method of the Snake, which will make the Snake move upwards by now. From the View code, I have linked the `keyPressed` event to this `tick` method. This is the result:
+<p align="center">
+  <img src="https://github.com/baez97/design-patterns-snake/blob/master/images/4-SnakeCounters.gif"/>
+</p>
