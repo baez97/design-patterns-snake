@@ -27,7 +27,22 @@ export default class Board {
     }
 
     setSnakePosition(x, y) {
+        if ( this.checkCollision(x, y) ) {
+            this.snake.hit();
+            return;
+        }
         this.cells[y][x] = new Cell(this.snake.length);
+        this.snake.x = x;
+        this.snake.y = y;
+    }
+
+    checkCollision(x, y) {
+        let lastCell= this.cells.length;
+        
+        var outHorizontal = x >= lastCell || x < 0;
+        var outVertical   = y >= lastCell || y < 0;
+
+        return outHorizontal || outVertical;
     }
 
     tick() {
@@ -36,5 +51,18 @@ export default class Board {
                 cell.tick()));
         
         this.moveSnake();
+    }
+
+    startMovingUp() {
+        this.snake.startMovingUp()
+    }
+    startMovingDown() {
+        this.snake.startMovingDown()
+    }
+    startMovingRight() {
+        this.snake.startMovingRight()
+    }
+    startMovingLeft() {
+        this.snake.startMovingLeft()
     }
 }

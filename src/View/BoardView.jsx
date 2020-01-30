@@ -9,19 +9,35 @@ export default class BoardView extends React.Component {
         this.state = {
             cells: this.board.cells
         }
-
-        document.onkeydown = () => this.keyPressed();
+        this.keyMethods = {
+            ArrowUp    : () => this.board.startMovingUp(),
+            ArrowDown  : () => this.board.startMovingDown(),
+            ArrowLeft  : () => this.board.startMovingLeft(),
+            ArrowRight : () => this.board.startMovingRight()
+        }
+        document.onkeydown = (event) => this.keyPressed(event);
     }
 
-    keyPressed() {
+    keyPressed(event) {
+        var movementMethod = this.keyMethods[event.key];
+        if ( movementMethod === undefined )
+            return; 
+        movementMethod();
+    }
+
+    tick() {
         this.board.tick();
         this.setState({cells: this.board.cells});
     }
 
+    componentDidMount() {
+        this.interval = setInterval(() => this.tick(), 500);
+    }
+
     render() {
         var matrix = this.state.cells.map(row => {
-            var row = row.map(cell => <a>{cell.counter} </a>)
-            return <div>{ row }</div>
+            var rowView = row.map(cell => <a>{cell.counter} </a>)
+            return <div>{ rowView }</div>
         });
 
         return (

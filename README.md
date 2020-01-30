@@ -94,3 +94,38 @@ But the purpose of the `Board` class was not only to contain the cells collectio
 <p align="center">
   <img src="https://github.com/baez97/design-patterns-snake/blob/master/images/4-SnakeCounters.gif"/>
 </p>
+
+## Chapter 2: Tell me how you are, and I'll tell you what you'll do
+It does not happen to make any sense to move the snake only when the user presses a key. Instead, the Snake should be moving every X milliseconds, and change the direction when the user presses a key, just like it is stated at the [Functional Definition](#functional-definition).
+
+The first step for that is to find a way to repeat an operation every X milliseconds, for what I am using JavaScript SetInterval on the BoardView.jsx class. It could also be done at the Board class, but as it's a logic that is not related to Design Patterns, I prefer to keep the Model clean, delegating in the View things like intervals or key-press events.
+
+This interval will call to the board's `tick` method every 500ms, which is already defined and works fine as we could test in the previous chapter. It is the Snake `move` method where changes should start. 
+
+First of all, the Snake class should have some kind of _direction_ property that can tell us how we should modify the position in each tick. Something like...
+ ```
+function move(setPositionFunction) {
+  if ( this.direction == "UP"   ) this.y = this.y - 1;
+  if ( this.direction == "DOWN" ) this.y = this.y + 1;
+  ...
+  setPositionFunction(this.x, this.y);
+}
+```
+
+Usually in this kind of games, this direction checking is repeated throughout the whole project, by a lot of different classes. Is this a problem? absolutely not, it is perfectly correct, but _GoF_ purposes another way of doing this stuff.
+
+### The State pattern
+When the behaviour of a class depends on the value of another variable, you can make that class delegate its behaviour on another object: its State object. This way, instead of asking of all the possibilities through `if` or `switch` stamentes, you can just ask that object to perform the operation, and you change the object whenever the state of the class changes.
+
+This is usually translated into the creation of an _State_ abstract class with the delegated operation, and some concrete classes that inherits it, one for each possibility of the variable (_Connected_ and _Disconnected_, _Up_ and _Down_, _Moving_ and _Stopped_...).
+
+### Implementation
+In our case, the behaviour of the Snake directly depends on its direction. This Design Pattern invites us to create an state object like `MovingUp` that has a `move` method. The Snake would have a property `state`, and when the Board asks the Snake to move, the Snake will rely on its `state` object by simply calling its `move` method. Just like `MovingUp`, we would create `MovingDown`, `MovingLeft` and `MovingRight`, being all of them children of the abstract class _State_.
+
+<p align="center">
+  <img src="https://github.com/baez97/design-patterns-snake/blob/master/images/5-State.png"/>
+</p>
+
+Now, when the Snake is asked to move, it will just rely on its State passing the SetPositionFunction callback that the Board provides to it.
+The `Board` class has two different methods for the snake movement: `move()` will tell the snake that is time to move, while `setPosition` will be called by the Snake (actually, by its `State`) in order to set its position. 
+> `setPosition` is receiving the position that the Snake is trying to get, but it has not moved yet. When the Board checks if there is any collission, it will change its position, or tell the snake that it has been hit.
