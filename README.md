@@ -73,6 +73,8 @@ But what would happen...
 
 By connecting both classes directly, we are losing flexibility and reusability.
 
+> In real world, it is not a good idea to program following barely possible future changes. We should program today for solving the problems of today. This article forces the implementation of Design Patterns just for learning, and some situations are raised so that we can understand the advantages of using them.
+
 ### The Mediator Pattern
 Mediator is an structural pattern that encapsulates the way two classes interact within a class. That is, instead of connecting two classes directly, we connect both to a higher class that will be in charge of their interaction. 
 
@@ -129,3 +131,31 @@ In our case, the behaviour of the Snake directly depends on its direction. This 
 Now, when the Snake is asked to move, it will just rely on its State passing the SetPositionFunction callback that the Board provides to it.
 The `Board` class has two different methods for the snake movement: `move()` will tell the snake that is time to move, while `setPosition` will be called by the Snake (actually, by its `State`) in order to set its position. 
 > `setPosition` is receiving the position that the Snake is trying to get, but it has not moved yet. When the Board checks if there is any collission, it will change its position, or tell the snake that it has been hit.
+
+## Chapter 3: Wow, what is that made of?
+The Snake can move freely so far, too freely. Shall we add some obstacles? In fact, why don't we add the fruits too? Okey, it seems obvious that both should be added at the beginning of the Board construction, but how should we put them?
+
+Maybe we should set a couple of constants that indicate the initial number of fruits and obstacles, and then add some logic that generates random positions for both. This implies some constrains:
+* The positions are obtained from 2 random numbers, one for the X and one for the Y.
+* The positions have to be inside the board.
+* If a cell already contains an obstacle or a fruit, it cannot contain any other one.
+* They should not be over the Snake initial position, so the Snake has to be created and set before them.
+
+It seems easy to implement, isn't it? But, as always in this game, it could be more complicated in the future. For example:
+* We may want to set the obstacles in a way that they don't surround the Snake.
+* We may want to add levels to the game, having each one a different configuration of obstacles.
+* We may want to add different kinds of board, with other obstacles, interactive beings, etc.
+
+### The Builder pattern
+When the creation of a set of objects implies complicated or flexible logic, this Design Pattern advises us to create a `Builder` object that will contain all that creation logic. This way, we are not only removing all that ugly code from the `Board` class, but we are also gaining flexibility. Why? well, let's have a look to the implementation in order to understand it by example.
+
+<p align="center">
+  <img src="https://github.com/baez97/design-patterns-snake/blob/master/images/6-Builder.png"/>
+</p>
+
+Well, the `Board` class will have an association to a instance of a `Builder`, and will ask him to create all the board objects that are needed. Let's consider now that we want to add new levels, we can create a Level2Builder that extends the parent Builder, and associate it to the Board class. Magic! The level has changed without touching a single line of code of the `Board` class.
+
+### Implementation
+We create a `Builder` class and instantiate it in the `Board` class constructor as as property of it. The `Buider` class will have a _master_ method that will execute a set of steps for creating every object needed in order, and simple method for instantiating simple objects so that the `Board` can use them as auxiliar methods.
+
+By now, we are instantiating ordinary cell objects for the obstacles and fruit. Obstacles will have a counter of 8, and fruits a counter of 9. (Soon we will use inheritance to solve this, it is just for making this section lighter and focus on the Builder Pattern).

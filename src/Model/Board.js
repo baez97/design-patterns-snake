@@ -1,10 +1,10 @@
 import Cell from './Cell';
-import Snake from './Snake';
-
+import Builder from './Builder';
 export default class Board {
     constructor(size, snakeLength) {
+        this.builder = new Builder();
         this.initializeCells(size);
-        this.initializeSnake(size, snakeLength);
+        this.builder.buildObjects(this);
     }
 
     initializeCells(size) {
@@ -14,12 +14,6 @@ export default class Board {
             for(let j = 0; j < size; j++)
                 this.cells[i].push(new Cell());
         }
-    }
-
-    initializeSnake(size, snakeLength) {
-        this.snake = new Snake(size-1, size-1, snakeLength);
-        var { posX, posY } = this.snake.getPosition();
-        this.cells[posY][posX] = new Cell(this.snake.length);
     }
 
     moveSnake() {

@@ -36,7 +36,7 @@ export default class BoardView extends React.Component {
 
     render() {
         var matrix = this.state.cells.map(row => {
-            var rowView = row.map(cell => <a>{cell.counter} </a>)
+            var rowView = row.map(cell => <span>{cell.counter} </span>)
             return <div>{ rowView }</div>
         });
 
