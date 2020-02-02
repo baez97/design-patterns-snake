@@ -4,6 +4,8 @@ export default class Board {
         this.builder = new Builder();
         this.initializeCells(size);
         this.builder.buildObjects(this);
+        this.doICollideWith = this.doICollideWith.bind(this);
+        this.setSnakePosition = this.setSnakePosition.bind(this);
     }
 
     initializeCells(size) {
@@ -16,20 +18,23 @@ export default class Board {
     }
 
     moveSnake() {
-        this.snake.move((x, y) => this.setSnakePosition(x,y));
+        this.snake.move(this.doICollideWith, this.setSnakePosition);
     }
 
-    setSnakePosition(x, y) {
-        if ( this.checkCollision(x, y) ) {
-            this.snake.hit();
-            return;
-        }
-        this.cells[y][x] = this.builder.buildSnakeCell(this.snake.length);
-        this.snake.x = x;
-        this.snake.y = y;
+    doICollideWith(x, y) {
+        var outOfBounds = this.checkOutOfBounds(x, y);
+        if ( outOfBounds )
+            return true;
+
+        var collideWithCell = this.checkCollideWithCell(this.snake, x, y);
+        return collideWithCell;
     }
 
-    checkCollision(x, y) {
+    setSnakePosition(x, y, length) {
+        this.cells[y][x] = this.builder.buildSnakeCell(length);
+    }
+
+    checkOutOfBounds(x, y) {
         let lastCell= this.cells.length;
         
         var outHorizontal = x >= lastCell || x < 0;
@@ -38,11 +43,18 @@ export default class Board {
         return outHorizontal || outVertical;
     }
 
+    checkCollideWithCell(snake, x, y) {
+        var cell = this.cells[y][x];
+        return cell.collide(snake);
+    }
+
     tick() {
         for ( let i = 0; i < this.cells.length; i++ )
             for ( let j = 0; j < this.cells[i].length; j++ ) {
                 var cell = this.cells[i][j];
                 cell.tick();
+                if ( cell.shouldSubstitute() )
+                    this.cells[i][j] = this.builder.buildEmptyCell();
             }
         
         this.moveSnake();

@@ -1,36 +1,49 @@
 class State {
-    move(snake, setPositionFunction) { }
+    move(snake, doICollideWith, setPosition) { 
+        var { newX, newY } = this.computeNewPosition(snake); 
+        if ( !doICollideWith(newX, newY) ) {
+            setPosition(newX, newY, snake.length);
+            snake.x = newX;
+            snake.y = newY;
+        }
+    }
+
+    computeNewPosition(snake) { return { newX: 0, newY: 0 }; }
 }
 
 class MovingUp extends State {
-    move(snake, setPositionFunction) {
+    computeNewPosition(snake) {
         var { posX, posY } = snake.getPosition();
+        var newX = posX;
         var newY = posY - 1;
-        setPositionFunction(posX, newY);
+        return { newX, newY };
     }
 }
 
 class MovingDown extends State {
-    move(snake, setPositionFunction) {
+    computeNewPosition(snake) {
         var { posX, posY } = snake.getPosition();
+        var newX = posX;
         var newY = posY + 1;
-        setPositionFunction(posX, newY);
+        return { newX, newY };
     }
 }
 
 class MovingRight extends State {
-    move(snake, setPositionFunction) {
+    computeNewPosition(snake) {
         var { posX, posY } = snake.getPosition();
         var newX = posX + 1;
-        setPositionFunction(newX, posY);
+        var newY = posY;
+        return { newX, newY };
     }
 }
 
 class MovingLeft extends State {
-    move(snake, setPositionFunction) {
+    computeNewPosition(snake) {
         var { posX, posY } = snake.getPosition();
         var newX = posX - 1;
-        setPositionFunction(newX, posY);
+        var newY = posY;
+        return { newX, newY };
     }
 }
 

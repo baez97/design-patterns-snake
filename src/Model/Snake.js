@@ -21,8 +21,8 @@ export default class Snake {
         this.length = Math.max(decrease, 0);
     }
 
-    move(setPositionFn) {
-        this.state.move(this, setPositionFn);
+    move(doICollideFn, setPositionFn) {
+        this.state.move(this, doICollideFn, setPositionFn);
     }
 
     startMovingUp() {

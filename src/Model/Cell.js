@@ -8,14 +8,26 @@ class Cell {
     }
 
     paint(adapter) { return adapter.GetEmptyCell(); }
+    shouldSubstitute() { return false; }
+    collide(snake) { return false; }
 }
 
 class SnakeCell extends Cell { 
     paint(adapter) { return adapter.GetSnakeCell(); }
+    shouldSubstitute() { return this.counter === 0; }
+    collide(snake) { 
+        snake.hit();
+        return true;
+    }
 }
 
 class FruitCell extends Cell { 
     paint(adapter) { return adapter.GetFruitCell(); }
+    shouldSubstitute() { return this.counter === 0; }
+    collide(snake) { 
+        snake.eat();
+        return false;
+    }
 }
 
 class EmptyCell extends Cell { 
@@ -24,14 +36,21 @@ class EmptyCell extends Cell {
     }
     tick() { }
     paint(adapter) { return adapter.GetEmptyCell(); }
-
+    shouldSubstitute() { return false; }
+    collide(snake) { return false; }
 }
+
 class ObstacleCell extends Cell {
     constructor() {
         super(0);
     }
     tick() { }
     paint(adapter) { return adapter.GetObstacleCell(); }
+    shouldSubstitute() { return false; }
+    collide(snake) { 
+        snake.hit(); 
+        return true; 
+    }
 }
 
 module.exports = {

@@ -208,7 +208,30 @@ Why should I use it? Well, when I wanted to change the object I want to communic
 In our solution, what we need is to translate Model instances into View instances. Our adapter logic will be at the View part, and will be called `ViewAdapter.jsx`. The `BoardView.jsx` will have a `viewAdapter` property, and when it wanted to paint a cell, it will pass the adapter to the cell, so that the cell tells the adapter which method it has to call in order to create its corresponding View. It may be difficult to understand by just reading, don't worry. Let's clarify the concept with a diagram.
 
 <p align="center">
-  <img src="https://github.com/baez97/design-patterns-snake/blob/master/images/6-Builder.png"/>
+  <img src="https://github.com/baez97/design-patterns-snake/blob/master/images/7-Adapter.png"/>
 </p>
 
 To sum up, when `BoardView` wants to paint a cell, instead of asking which kind of cell is it dealing with, it will ask the cell to tell the adapter who it is. For that, it passes the `viewAdapter` to the `paint` method of the cell, so that the cell is responsible for calling the corresponding method of the adapter.
+
+## Chapter 5: Not all the heroes wear a coat
+We are doing pretty well, after writting some lines of code we have a game prototype, but it is still not functional because of minor logic bugs that are not so very related with design. However, even in this "minor-logic" stuff, _Design Patterns_ book can help us.
+
+### Part 1: No excuses, just tell me yes or not.
+Now we have a problem, the Snake has an infinite length! We have to tell the `Board` that it must substitute a cell by an `EmptyCell` when its counter reachs 0. But this should only be applied for Snakes and Fruits, isn't it? So how do we differenciate between those two and the obstacles? Shall we use an infinite counter? Could be keep the `ObstacleCell` counter from decreasing? Or maybe use an `if-else` when the `Board` tries to substitute one Cell by an `EmptyCell` so that it checks that it is not an `ObstacleCell`.
+
+All the previous solutions are valid, and solve our problem, but after reading the _Design Patterns_ book, a powerful sense of delegating and avoiding explicit logic (`if-else` and `switch` stuff) as much as possible arises. Following that sense, I concluded that a better solution applying the concepts of the book will be this one:
+
+The `Cell` parent class will have a `shouldSubstitute` method, and each child will override its method based on its particular condition. The Board will ask `shouldSubstitute` instead of asking for the counter. This way we gain a lot of flexibility, so we can include new objects and dealign with its temporal condition by just overriding this method. Does it work? Yes! Our Snake has a finite length! Also, fruits are disappearing, while obstacles are not.
+
+### Part 2: Fix your problems you two alone
+The other problem is that the Snake is not colliding with the objects nor eating. `Board` class should handle this, as we declared it as our _Mediator_ between both classes, concretely in the methot that moves the Snake, `setSnakePosition`.
+
+This method calls to `checkCollision`, but it only checks if the new position is out of bounds. Now what we are going to check if it the Cell is a Fruit or an Obstacle, and depending on what it is, it should behave hiting or eating. Therefore, could be `Board` class check what kind of cell is the one at the new position and make the snake move, eat or hit depending on it? Well, of course it can, but the _delegating and avoiding explicit logic sense_ does not allow me to do it. How can we do it following the _Design Patterns_ book principles?
+
+Cell parent class will have a method called `collide`, that will receive the Snake and will tell it what operation has to do. `ObstacleCell` will override this method telling the Snake that it is a `hit()`, while `FruitCell` will tell it to `eat()`. `Board` class will just check that the Snake is not out of bounds, and then connect the cell and the Snake.
+
+Hooray! Our Snake Game is functional!
+
+<p align="center">
+  <img src="https://github.com/baez97/design-patterns-snake/blob/master/images/8-Prototype.png"/>
+</p>
