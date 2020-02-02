@@ -33,7 +33,10 @@ export default class BoardView extends React.Component {
     }
 
     componentDidMount() {
-        this.interval = setInterval(() => this.tick(), 500);
+        this.interval = setInterval(() => {
+            if(!this.props.paused)
+                this.tick()
+        }, 500);
     }
 
     render() {

@@ -235,3 +235,22 @@ Hooray! Our Snake Game is functional!
 <p align="center">
   <img src="https://github.com/baez97/design-patterns-snake/blob/master/images/8-Prototype.png"/>
 </p>
+
+## Chapter 6: Killing flies with tanks
+Design Patterns are great practices that help us designing a flexible, decoupled and reusable solution, but they are not universally the best option for everything, they have some disadvantages:
+* The number of classes increases in your solution.
+* The logic is more distributed, and so, may be more difficult to follow for a programmer that knows nothing about Design Patterns.
+* You invest an extra effort for flexibility, but you may never need that flexibility.
+For these reasons, you should not use them whenever you identify something related a Design Pattern you already know. Just use them when it is worth.
+
+For example, if in our Snake Game we wanted to add a "Pause" button, we can think about applying an State pattern. For that we would create a `GameState` parent class and `Playing` and `Paused` child classes. Each one would have a `tick` method that the Board will call, and the state object will change when the `Pause` button is pressed.
+
+We are creating 3 classes, distributing the logic of a functionality in two parts. Of course, we gain flexibility, but do we really need it? Is there any other state for a game that is not "Paused" and "Playing", why don't we use a simple boolean variable like `pause` and check it before calling to the `tick()` method?
+* It is much more simple.
+* It is much easier to read.
+* We don't really need more flexibility.
+
+### Implementation
+A new paused attribute is added to the `GameView` class, and will be passed to the `BoardView` so that the operation defined for the interval does not perform the `tick` unless the Game is not paused. A button is also added to `GameView`, that simply toggles the value of the `paused` variable.
+
+> For the pause funcionality we have to choose between delegate the logic to the View or to the Game, there is not a better choice. For me, pausing this game is a View business, as we are dealing with the `tick` interval from it.
