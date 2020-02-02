@@ -159,3 +159,56 @@ Well, the `Board` class will have an association to a instance of a `Builder`, a
 We create a `Builder` class and instantiate it in the `Board` class constructor as as property of it. The `Buider` class will have a _master_ method that will execute a set of steps for creating every object needed in order, and simple method for instantiating simple objects so that the `Board` can use them as auxiliar methods.
 
 By now, we are instantiating ordinary cell objects for the obstacles and fruit. Obstacles will have a counter of 8, and fruits a counter of 9. (Soon we will use inheritance to solve this, it is just for making this section lighter and focus on the Builder Pattern).
+
+## Chapter 4: Could you please go talk to him?
+Okey, we have fruits an obstacles, but when we execute the game they are just simple cells, and their counter decreases so that they end up dissappearing. Maybe that behaviour is interesting for the fruits, but not for the obstacles. It seems obvious that the game is asking for different kind of cells, isn't it?
+
+So we are creating classes for `SnakeCell`, `EmptyCell`, `FruitCell`, and `ObstacleCell`, all of them inherits from the base `Cell` class. By now, the only difference with the parent class would be at `ObstacleCell`, whose counter never decreases.
+````
+class SnakeCell extends Cell { }
+class FruitCell extends Cell { }
+class EmptyCell extends Cell { 
+    constructor() {
+        super(0);
+    }
+    tick() { }
+}
+class ObstacleCell extends Cell {
+    constructor() {
+        super(0);
+    }
+    tick() { }
+}
+````
+
+> Creating a child class that does exactly the same thing that the parent class seems absurd, but we are going to need it soon, be pacient.
+
+We are going to change the Builder class, so that it builds the correct instances instead of simple cells. Is it working? Of course not, where are the obstacles and fruits? We have to feed them separately!
+
+The next step would be paint them differently so the player can see them, and the paint process is done in the BoardView.jsx class. How could we achieve that? Well, an if-else chaing can save the situation like this:
+````
+var cellView = undefined;
+if ( cell instanceof SnakeCell )
+  cellView = $OUR_SNAKE_CELL_VIEW;
+else if ( cell instanceof EmptyCell )
+  cellView = $OUR_EMPTY_CELL_VIEW;
+//and so on...
+````
+
+But this solution is pretty ugly, and not so efficient. The same if-else would have to be repeated if we wanted to add another kind of view, like a Mobile or Native view. How can we do that? Well, let's first analyze our problem: we have two parts, the model and the view, and there is a conceptual relation between a unit of the model and a unit of the view (SnakeCell and $OUR_SNAKE_CELL_VIEW), but they can't mix them, and we want to build a flexible solution that avoids `if-else` stuff.
+
+### The Adapter Pattern
+Whenever two entities have a conceptual relation or need of communication, the Adapter Design Pattern advises us to use an intermediate object that translates one to the other so that they can communicate and understand each other. Words like _relation_ and _understand each other_ sounds very beautiful, but what does it mean in terms of coding?
+
+It means that if we have two objects that are related and make calls to each other, we can encapsulate their entry points in an `Adapter` object to whom both make calls to, and the `Adapter` object will perform the appropiate call to the addressee. At the end, it is some kind of translator.
+
+Why should I use it? Well, when I wanted to change the object I want to communicate to, instead of changing all the calls I make to it so that they adapt to the new object, I can just change the `Adapter` :)
+
+### Implementation
+In our solution, what we need is to translate Model instances into View instances. Our adapter logic will be at the View part, and will be called `ViewAdapter.jsx`. The `BoardView.jsx` will have a `viewAdapter` property, and when it wanted to paint a cell, it will pass the adapter to the cell, so that the cell tells the adapter which method it has to call in order to create its corresponding View. It may be difficult to understand by just reading, don't worry. Let's clarify the concept with a diagram.
+
+<p align="center">
+  <img src="https://github.com/baez97/design-patterns-snake/blob/master/images/6-Builder.png"/>
+</p>
+
+To sum up, when `BoardView` wants to paint a cell, instead of asking which kind of cell is it dealing with, it will ask the cell to tell the adapter who it is. For that, it passes the `viewAdapter` to the `paint` method of the cell, so that the cell is responsible for calling the corresponding method of the adapter.

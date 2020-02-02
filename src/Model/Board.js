@@ -1,4 +1,3 @@
-import Cell from './Cell';
 import Builder from './Builder';
 export default class Board {
     constructor(size, snakeLength) {
@@ -12,7 +11,7 @@ export default class Board {
         for(let i = 0; i < size; i++) {
             this.cells.push([]);
             for(let j = 0; j < size; j++)
-                this.cells[i].push(new Cell());
+                this.cells[i].push(this.builder.buildEmptyCell());
         }
     }
 
@@ -25,7 +24,7 @@ export default class Board {
             this.snake.hit();
             return;
         }
-        this.cells[y][x] = new Cell(this.snake.length);
+        this.cells[y][x] = this.builder.buildSnakeCell(this.snake.length);
         this.snake.x = x;
         this.snake.y = y;
     }
@@ -40,9 +39,11 @@ export default class Board {
     }
 
     tick() {
-        this.cells.forEach(row => 
-            row.forEach( cell => 
-                cell.tick()));
+        for ( let i = 0; i < this.cells.length; i++ )
+            for ( let j = 0; j < this.cells[i].length; j++ ) {
+                var cell = this.cells[i][j];
+                cell.tick();
+            }
         
         this.moveSnake();
     }

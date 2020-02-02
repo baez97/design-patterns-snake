@@ -1,5 +1,5 @@
 import Snake from './Snake';
-import Cell from './Cell';
+import { EmptyCell, SnakeCell, FruitCell, ObstacleCell } from './Cell';
 
 export default class Builder {
     nOfObstacles  = 5;
@@ -15,7 +15,7 @@ export default class Builder {
     buildInitialSnake(cells) {
         var lastCell = cells.length - 1;
         var snake = this.buildSnake(lastCell, lastCell);
-        var snakeCell = this.buildCell(snake.length);
+        var snakeCell = this.buildSnakeCell(snake.length);
         cells[lastCell][lastCell] = snakeCell;
         return snake;
     }
@@ -25,7 +25,7 @@ export default class Builder {
             var randX = this.randomNumber(0, cells.length);
             var randY = this.randomNumber(0, cells.length);
             if ( cells[randY][randX].counter ===  0)
-                cells[randY][randX] = this.buildCell(8);
+                cells[randY][randX] = this.buildObstacleCell();
         }
     }
 
@@ -34,7 +34,7 @@ export default class Builder {
             var randX = this.randomNumber(0, cells.length);
             var randY = this.randomNumber(0, cells.length);
             if ( cells[randY][randX].counter ===  0)
-                cells[randY][randX] = this.buildCell(9);
+                cells[randY][randX] = this.buildFruitCell(this.randomNumber(10, 20));
         }
     }
 
@@ -42,11 +42,23 @@ export default class Builder {
         return new Snake(x, y, this.initialLength)
     }
 
-    buildCell(counter) {
-        return new Cell(counter);
+    buildSnakeCell(counter) {
+        return new SnakeCell(counter);
+    }
+
+    buildFruitCell(counter) {
+        return new FruitCell(counter);
+    }
+
+    buildEmptyCell() {
+        return new EmptyCell();
+    }
+
+    buildObstacleCell() {
+        return new ObstacleCell();
     }
 
     randomNumber(min, max) {
-        return Math.floor(Math.random()*max - min);
+        return Math.floor(Math.random()*(max - min) + min);
     }
 }
