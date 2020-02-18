@@ -1,4 +1,9 @@
 # Design Patterns in Software Engineering
+### Introduction
+Design Patterns are a great set of practices that may help us gain flexibility and reusability in our software solutions, do you know them? There are tons of them, in fact, a whole book was needed in order to define them. 
+
+This repository intends to be a kind of introductory article to Design Patterns by building the _Snake Game_ step by step using them. Both the code and this README has been written divided in "Chapters", so that each Chapter corresponds to a Design Pattern/Principle. I hope you find it useful :) Let's start with the definition of what a _Design Pattern_ is.
+
 ### Definition
 According to _Gof_ book __Design Patterns: Elements of Reusable Object-Oriented Software__, this is the definition:
 
@@ -11,9 +16,14 @@ We can conclude two facts from this definition:
 But how can you describe the relationships between objects? Obviously with schemes, and the more universal the language of our schemes the better, that is where UML comes in.
 
 ### UML
-UML stands for Universal Modeling Language, and it is a tool we can use for sharing our models with our team or others. It purposes different types of schemes for modeling, but we are focusing on the main one for Design Patterns: the [Class Diagram](https://en.wikipedia.org/wiki/Class_diagram).
+UML stands for Universal Modeling Language, and it is a tool we can use for sharing our models with our team or others. It purposes different types of schemes for modeling, but we are focusing on one of the most important ones for Design Patterns: the [Class Diagram](https://en.wikipedia.org/wiki/Class_diagram).
 
 > However, you do not need to know UML to understand this article. In fact, I am not using any UML modeling tool or following its schemes in an strict way. Instead, I am using Keynote to draw a basic scheme of the classes we are using and how they are connected. Nevertheless, I highly recommend having a look to the UML documentation if you want to go further with Software Design.
+
+#### How should I deal with this article?
+Clone this repo, checkout the first commit, and open this repo in two different tabs, one with this README and the other one with the commit record. Install _NodeJS_, add it to your path and run `npm install` and `npm start` on a Terminal/CMD once you have navigated to the project's folder.
+
+Now, you can read chapter by chapter by comparing it to the commit asociated, as there is one commit per chapter. This way, you can implement the new functionality at your own and then compare with the final solution. Also this may be useful for easily finding the code that is related to each pattern, as each commit has the name of the pattern applied on its commit message. Let's begin! 
 
 ## Chapter 0: The Snake Game
 One of the best ways to learn Design Patterns is through a game, as there is a lot of interactivity between the objects, and you can see it graphically. The Snake Game happens to be a good example for this topic, so in this repository we are dealing with the development of the game using some Design Patterns. You can follow the Commit history in order to see the progression from one Pattern to the next one.
@@ -195,7 +205,7 @@ else if ( cell instanceof EmptyCell )
 //and so on...
 ````
 
-But this solution is pretty ugly, and not so efficient. The same if-else would have to be repeated if we wanted to add another kind of view, like a Mobile or Native view. How can we do that? Well, let's first analyze our problem: we have two parts, the model and the view, and there is a conceptual relation between a unit of the model and a unit of the view (SnakeCell and $OUR_SNAKE_CELL_VIEW), but they can't mix them, and we want to build a flexible solution that avoids `if-else` stuff.
+But this solution is pretty ugly, and not so efficient. The same if-else would have to be repeated if we wanted to add another kind of view, like a Mobile or Native view. How can we do that? Well, let's first analyze our problem: we have two parts, the model and the view, and there is a conceptual relation between a unit of the model and a unit of the view (`SnakeCell` and `$OUR_SNAKE_CELL_VIEW`), but they can't mix them, and we want to build a flexible solution that avoids `if-else` stuff.
 
 ### The Adapter Pattern
 Whenever two entities have a conceptual relation or need of communication, the Adapter Design Pattern advises us to use an intermediate object that translates one to the other so that they can communicate and understand each other. Words like _relation_ and _understand each other_ sounds very beautiful, but what does it mean in terms of coding?
@@ -233,7 +243,7 @@ Cell parent class will have a method called `collide`, that will receive the Sna
 Hooray! Our Snake Game is functional!
 
 <p align="center">
-  <img src="https://github.com/baez97/design-patterns-snake/blob/master/images/8-Prototype.png"/>
+  <img src="https://github.com/baez97/design-patterns-snake/blob/master/images/8-Prototype.gif"/>
 </p>
 
 ## Chapter 6: Killing flies with tanks
@@ -254,3 +264,12 @@ We are creating 3 classes, distributing the logic of a functionality in two part
 A new paused attribute is added to the `GameView` class, and will be passed to the `BoardView` so that the operation defined for the interval does not perform the `tick` unless the Game is not paused. A button is also added to `GameView`, that simply toggles the value of the `paused` variable.
 
 > For the pause funcionality we have to choose between delegate the logic to the View or to the Game, there is not a better choice. For me, pausing this game is a View business, as we are dealing with the `tick` interval from it.
+
+## Conclusion
+With this article we have learned a little bit about some Design Patterns and how to apply them, but in the last two chapters something changed... There were no Design Patterns! The main purpose of this article was to give an introduction to DP, but also to this _highly decoupled_ and _no-explicit-logic_ way of programming so that we do not have to memorize all the Design Patterns, their advantages and usages.
+
+Of course, reading about all of them will for sure increase your powers, but there are so many topics to read about in Software Engineering that sometimes we need a brief introduction like this article so we can decide if we want to get deeper or just have a basic notion about it.
+
+Thank you so much for reading this article, and please feel free to fork and make contributions. It's a pleasure for me to share this with you :)
+
+Special thanks to @jgallud, my Design Patterns teacher who inspired me so heavily that I couldn't avoid to make an article about it.
